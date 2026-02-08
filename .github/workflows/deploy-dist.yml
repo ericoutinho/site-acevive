@@ -1,25 +1,28 @@
-name: Deploy Dist Folder
+name: Deploy /dist para /public_html
 
 on:
   push:
     branches:
-      - main # ou master, branch que contém seu código fonte
+      - main
 
 jobs:
-  build-and-deploy:
+  web-deploy:
+    name: 🎉 Deploy
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Source Code
+      - name: 🚚 Get latest code
         uses: actions/checkout@v4
 
-      - name: Install and Build
+      - name: 🔨 Build Project
         run: |
           npm install
-          npm run build # Certifique-se de que isso gera a pasta 'dist'
+          npm run build
 
-      - name: Deploy to Dist Branch
-        uses: JamesIves/github-pages-deploy-action@v4
+      - name: 📂 Sync files
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          branch: deploy # A branch que receberá apenas os arquivos da dist
-          folder: dist        # A pasta que será enviada
-          clean: true         # Remove arquivos antigos da branch de destino
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: /public_html/
+          local-dir: ./dist/
