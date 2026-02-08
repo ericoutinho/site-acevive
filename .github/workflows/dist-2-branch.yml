@@ -1,0 +1,26 @@
+name: Deploy /dist to custom branch
+
+on:
+  push:
+    branches:
+      - release
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install and Build
+        run: |
+          npm install
+          npm run build # Certifique-se de que isso gera a pasta 'dist'
+
+      - name: Push dist to new branch
+        run: |
+          git checkout --orphan ${{ vars.DEPLOY_BRANCH }}
+          git rm -rf .
+          cp -r dist/* .
+          git add .
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git commit -m "Deploy dist folder to ${{ vars.DEPLOY_BRANCH }}"
+          git push -f origin ${{ vars.DEPLOY_BRANCH }}
