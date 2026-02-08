@@ -1,0 +1,25 @@
+name: Deploy Dist Folder
+
+on:
+  push:
+    branches:
+      - main # ou master, branch que contém seu código fonte
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Install and Build
+        run: |
+          npm install
+          npm run build # Certifique-se de que isso gera a pasta 'dist'
+
+      - name: Deploy to Dist Branch
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: deploy # A branch que receberá apenas os arquivos da dist
+          folder: dist        # A pasta que será enviada
+          clean: true         # Remove arquivos antigos da branch de destino
